@@ -1,0 +1,150 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id 'org.jetbrains.kotlin.plugin.serialization'
+}
+
+android {
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def buildType = variant.baseName.split("-")[0]
+            outputFileName = "${Config.APP_NAME}-${buildType}-v${Config.VERSION_NAME}-c${Config.VERSION_CODE}.apk"
+        }
+    }
+
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        packagingOptions {
+            jniLibs {
+                useLegacyPackaging true
+            }
+        }
+    }
+
+    // Config
+    compileSdk Config.COMPILE_SDK
+    defaultConfig {
+        applicationId Config.APPLICATION_ID
+        minSdkVersion Config.MIN_SDK
+        versionCode Config.VERSION_CODE
+        versionName Config.VERSION_NAME
+        multiDexEnabled true
+        vectorDrawables {
+            useSupportLibrary true
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+    }
+
+    // Build
+    signingConfigs {
+        release {
+            storeFile file("release.jks")
+            storePassword "password"
+            keyAlias "release_key"
+            keyPassword "password"
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+            matchingFallbacks = ["debug"]
+            applicationIdSuffix ".debug"
+            versionNameSuffix ".debug"
+            manifestPlaceholders = [appName: "Skoove Debug"]
+            signingConfig signingConfigs.debug
+        }
+        release {
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            matchingFallbacks = ["release"]
+            signingConfig signingConfigs.release
+            manifestPlaceholders = [appName: "Skoove Code Challege"]
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion Version.KOTLIN_COMPILER_EXTENSION_VERSION
+    }
+    namespace 'com.skoove.challenge'
+}
+
+dependencies {
+    implementation Dependencies.ANDROIDX_APPCOMPACT
+    implementation Dependencies.ANDROIDX_ACTIVITY
+
+    implementation Dependencies.STARTUP
+    implementation Dependencies.COROUTINE_CORE
+    implementation Dependencies.COROUTINE_ANDROID
+    implementation Dependencies.LIFECYCLE_LIVEDATA
+    implementation Dependencies.LIFECYCLE_VIEWMODEL
+    implementation Dependencies.LIFECYCLE_SAVEDSTATE
+    implementation Dependencies.LIFECYCLE_VIEWMODEL_COMPOSE
+    implementation Dependencies.ACTIVITY_COMPOSE
+    implementation Dependencies.COMPOSE_RUNTIME
+    implementation Dependencies.COMPOSE_UI
+    implementation Dependencies.COMPOSE_FOUNDATION_LAYOUT
+    implementation Dependencies.COMPOSE_MATERIAL
+    implementation Dependencies.COMPOSE_MATERIAL_ICONS
+    implementation Dependencies.COMPOSE_FOUNDATION
+    implementation Dependencies.COMPOSE_ANIMATION
+    debugImplementation Dependencies.COMPOSE_UI_TOOLING
+    implementation Dependencies.COMPOSE_UI_TOOLING_PREVIEW
+    implementation Dependencies.COMPOSE_RUNTIME_LIVEDATA
+    implementation Dependencies.NAVIGATION_COMPOSE
+
+    implementation Dependencies.KOIN_CORE
+    implementation Dependencies.KOIN_ANDROID
+    implementation Dependencies.KOIN_COMPOSE
+
+    implementation Dependencies.COIL
+    implementation Dependencies.COIL_KT
+    implementation Dependencies.COIL_SVG
+    implementation Dependencies.KOTLIN_X_SERIALIZATION
+
+    testImplementation Dependencies.JUNIT
+    testImplementation Dependencies.MOCKK
+    testImplementation Dependencies.MOCKK_AGENT_JVM
+    testImplementation Dependencies.ROBOLECTRIC
+    testImplementation Dependencies.ANDROIDX_TEST_CORE
+    testImplementation Dependencies.ESPRESSO
+    testImplementation Dependencies.KOTLINX_COROUTINES_TEST
+    testImplementation Dependencies.COMPOSE_UI_JUNIT4
+
+    androidTestImplementation Dependencies.ANDROIDX_JUNIT
+    androidTestImplementation Dependencies.ESPRESSO
+    androidTestImplementation Dependencies.MOCKK_ANDROID
+    androidTestImplementation Dependencies.COMPOSE_UI_JUNIT4
+
+    implementation(project(":data"))
+}
+
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        allWarningsAsErrors = project.hasProperty("warningsAsErrors") ? project.warningsAsErrors : false
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs += "-opt-in=kotlin.Experimental"
+        freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        freeCompilerArgs += "-opt-in=androidx.compose.material.ExperimentalMaterialApi"
+        freeCompilerArgs += "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
+        freeCompilerArgs += "-opt-in=androidx.compose.animation.ExperimentalAnimationApi"
+
+        jvmTarget = "11"
+    }
+}

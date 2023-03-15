@@ -1,0 +1,65 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+    id "kotlin-parcelize"
+}
+
+android {
+    compileSdk Config.COMPILE_SDK
+
+    defaultConfig {
+        minSdk Config.MIN_SDK
+        targetSdk Config.TARGET_SDK
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            buildConfigField "String", "CONNECTION_URL", '"https://nomad5.com/data/skoove/"'
+        }
+        release {
+            minifyEnabled true
+            buildConfigField "String", "CONNECTION_URL", '"https://nomad5.com/data/skoove/"'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    namespace 'com.skoove.challenge.data'
+}
+
+dependencies {
+    implementation Dependencies.ANDROIDX_CORE
+    implementation Dependencies.ANDROIDX_APPCOMPACT
+    implementation Dependencies.MATERIAL
+    implementation Dependencies.KOIN_CORE
+
+    implementation Dependencies.RETROFIT
+    implementation Dependencies.RETROFIT_CONVERTER_SCALARS
+    implementation Dependencies.LOGGING_INTERCEPTOR
+    implementation Dependencies.COROUTINE_CORE
+    implementation Dependencies.COROUTINE_ANDROID
+    implementation Dependencies.KOTLIN_X_SERIALIZATION
+    implementation Dependencies.KOTLIN_SERIALIZATION_CONVERTOR
+
+    testImplementation Dependencies.JUNIT
+    testImplementation Dependencies.MOCKK
+    testImplementation Dependencies.MOCKK_AGENT_JVM
+    testImplementation Dependencies.MOCK_WEBSERVER
+    testImplementation Dependencies.KOTLINX_COROUTINES_TEST
+    androidTestImplementation Dependencies.ANDROIDX_JUNIT
+    androidTestImplementation Dependencies.ESPRESSO
+    androidTestImplementation Dependencies.MOCKK_ANDROID
+    androidTestImplementation Dependencies.MOCK_WEBSERVER
+    androidTestImplementation Dependencies.KOTLINX_COROUTINES_TEST
+
+    api(project(":domain"))
+}
