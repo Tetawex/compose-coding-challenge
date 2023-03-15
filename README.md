@@ -1,3 +1,1 @@
-# My app
-
-My description
+# Code challenge - basic audio player
